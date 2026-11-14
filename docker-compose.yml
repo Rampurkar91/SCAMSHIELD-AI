@@ -5,8 +5,7 @@ services:
       POSTGRES_DB: scamshield
       POSTGRES_USER: scamshield
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in root .env}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    volumes: [postgres-data:/var/lib/postgresql/data]
     healthcheck:
       test: [CMD-SHELL, "pg_isready -U scamshield -d scamshield"]
       interval: 5s
@@ -16,15 +15,51 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    env_file:
+      - path: ./backend/.env
+        required: false
     environment:
       DATABASE_URL: postgresql+psycopg://scamshield:${POSTGRES_PASSWORD}@db:5432/scamshield
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in root .env}
       APP_ENV: production
-      FRONTEND_URL: http://localhost:5173
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      SCANNER_WORKER_URL: http://scanner:8090
+      SCANNER_WORKER_KEY: ${SCANNER_WORKER_KEY:?Set SCANNER_WORKER_KEY in root .env}
     ports: ["8000:8000"]
+    networks: [default, scan]
     depends_on:
       db:
         condition: service_healthy
+      scanner:
+        condition: service_started
+  scanner:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.worker
+    environment:
+      SCANNER_WORKER_KEY: ${SCANNER_WORKER_KEY:?Set SCANNER_WORKER_KEY in root .env}
+      OCR_LANG: eng+hin+mar
+      WHISPER_MODEL_PATH: /models/whisper-base
+    networks: [scan]
+    # No published port, no external network, no database/API/provider credentials.
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 2g
+    cpus: 2
+    volumes: [speech-models:/models:ro]
+    restart: unless-stopped
+  model-setup:
+    profiles: [setup]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.worker
+    command: [python, -m, backend.scripts.install_speech_model, --model, base, --directory, /models/whisper-base]
+    # Operator-run setup has egress; the runtime scanner does not.
+    networks: [default]
+    volumes: [speech-models:/models]
   frontend:
     build:
       context: .
@@ -33,5 +68,9 @@ services:
       VITE_PROXY_TARGET: http://api:8000
     ports: ["5173:5173"]
     depends_on: [api]
+networks:
+  scan:
+    internal: true
 volumes:
   postgres-data:
+  speech-models:

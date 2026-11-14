@@ -192,7 +192,15 @@ def scan_zip(raw, check_dependencies=False):
             }
             for i, f in enumerate(findings)
         ],
-        "details": {"findings": findings, "files_scanned": scanned, "osv": osv},
+        "details": {
+            "findings": findings,
+            "files_scanned": scanned,
+            "osv": osv,
+            "dependencies": [
+                {"ecosystem": e, "name": n[:150], "version": v[:100]}
+                for e, n, v in list(dict.fromkeys(dependencies))[:10]
+            ],
+        },
         "actions": [
             "Review each finding in context before changing code.",
             "Rotate exposed secrets; removing a line does not revoke a credential.",

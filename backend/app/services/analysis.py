@@ -3,7 +3,7 @@ from ..integrations.providers import check_url, gemini_answer
 from .ml import predict_sms
 
 
-def enrich(kind, content, external=False, ai=False):
+def enrich(kind, content, external=False, ai=False, language="English"):
     result = analyze(kind, content)
     result["sources"] = ["local_rules"]
     result["providers"] = []
@@ -56,7 +56,9 @@ def enrich(kind, content, external=False, ai=False):
     )
     if result["ml"]["status"] == "ok":
         result["sources"].append("english_sms_spam_baseline")
-    result["ai"] = gemini_answer(content) if ai else {"status": "not_requested"}
+    result["ai"] = (
+        gemini_answer(content, language) if ai else {"status": "not_requested"}
+    )
     if result["ai"]["status"] == "ok":
         result["sources"].append("ai_explanation")
     result["limitations"].append(

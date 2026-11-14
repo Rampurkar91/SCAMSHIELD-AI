@@ -88,3 +88,64 @@ class QuizAttempt(Base):
     quiz_id: Mapped[str] = mapped_column(String(40))
     score: Mapped[int] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    digest: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
+    expires: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
+class FamilyGroup(Base):
+    __tablename__ = "family_groups"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    name: Mapped[str] = mapped_column(String(80))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class FamilyMember(Base):
+    __tablename__ = "family_members"
+    group_id: Mapped[int] = mapped_column(
+        ForeignKey("family_groups.id", ondelete="CASCADE"), primary_key=True
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class FamilyInvitation(Base):
+    __tablename__ = "family_invitations"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(
+        ForeignKey("family_groups.id", ondelete="CASCADE"), index=True
+    )
+    email: Mapped[str] = mapped_column(String(254), index=True)
+    digest: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    expires: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class FamilyAlert(Base):
+    __tablename__ = "family_alerts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(
+        ForeignKey("family_groups.id", ondelete="CASCADE"), index=True
+    )
+    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    # Consent creates a snapshot without original content, URLs, IDs or explanations.
+    kind: Mapped[str] = mapped_column(String(20))
+    score: Mapped[int] = mapped_column(Integer)
+    level: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class UserPreference(Base):
+    __tablename__ = "user_preferences"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    language: Mapped[str] = mapped_column(String(2), default="en")

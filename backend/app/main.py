@@ -112,7 +112,11 @@ def db():
         yield session
 
 
-def current(auth: HTTPAuthorizationCredentials = Depends(bearer), session=Depends(db)):
+def current(
+    request: Request,
+    auth: HTTPAuthorizationCredentials = Depends(bearer),
+    session=Depends(db),
+):
     try:
         if not auth:
             raise ValueError()
@@ -120,13 +124,32 @@ def current(auth: HTTPAuthorizationCredentials = Depends(bearer), session=Depend
         user = session.get(User, int(data["sub"]))
         if not user or data["v"] != user.version:
             raise ValueError()
+        if os.getenv(
+            "REQUIRE_EMAIL_VERIFICATION", "false"
+        ).lower() == "true" and not request.url.path.startswith(
+            ("/api/auth/", "/api/profile")
+        ):
+            from .services.family import is_verified
+
+            if not is_verified(session, user.id):
+                raise HTTPException(403, "Verify your email before using this feature.")
         return user
     except (jwt.PyJWTError, ValueError, KeyError):
         raise HTTPException(401, "Session expired. Please log in.")
 
 
 def public(user):
-    return {"id": user.id, "name": user.name, "email": user.email, "role": user.role}
+    from .services.family import is_verified
+
+    with SessionLocal() as session:
+        verified = is_verified(session, user.id)
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "email_verified": verified,
+    }
 
 
 def token(user):
@@ -173,6 +196,7 @@ class Submission(BaseModel):
     content: str = Field(min_length=3, max_length=12000)
     use_external: bool = False
     use_ai: bool = False
+    language: Literal["English", "Hindi", "Marathi"] = "English"
 
 
 class Profile(BaseModel):
@@ -349,6 +373,9 @@ from .services.routes import make_router, save_scan
 from .services.analysis import enrich
 
 app.include_router(make_router(current, db))
+from .services.family import make_family_router
+
+app.include_router(make_family_router(current, db))
 
 
 @app.post("/api/scans/{kind}", status_code=201)
@@ -359,7 +386,9 @@ def scan(
     session=Depends(db),
 ):
     try:
-        result = enrich(kind, data.content, data.use_external, data.use_ai)
+        result = enrich(
+            kind, data.content, data.use_external, data.use_ai, data.language
+        )
     except ValueError as error:
         raise HTTPException(422, str(error))
     return save_scan(session, user, kind, data.content, result)

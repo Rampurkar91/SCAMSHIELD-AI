@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
@@ -11,7 +15,21 @@
     "checkJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "types": ["vite/client", "@testing-library/jest-dom"]
+    "types": [
+      "vite/client",
+      "@testing-library/jest-dom"
+    ],
+    "jsxImportSource": "@scamshield/i18n",
+    "paths": {
+      "@scamshield/i18n/*": [
+        "./src/i18n/*"
+      ]
+    },
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/api.js"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/api.js"
+  ]
 }

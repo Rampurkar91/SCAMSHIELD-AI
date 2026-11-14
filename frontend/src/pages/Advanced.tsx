@@ -5,6 +5,8 @@ import React, {
   type FormEvent,
 } from "react";
 import { Link } from "react-router-dom";
+import{RuntimeSetup}from"./RuntimeSetup";
+import{useLocale}from"../i18n/core";
 import {
   Camera,
   QrCode,
@@ -237,6 +239,8 @@ export function UploadScanner({
   );
 }
 export function Assistant() {
+  const locale=useLocale();
+  useEffect(()=>setLanguage({en:"English",hi:"Hindi",mr:"Marathi"}[locale]),[locale]);
   const [message, setMessage] = useState(""),
     [language, setLanguage] = useState("English"),
     [useAI, setAI] = useState(false),
@@ -361,7 +365,7 @@ export function Assistant() {
                   {m.source} · {m.status}
                 </small>
               )}
-              <p>{m.text}</p>
+              <p translate="no">{m.text}</p>
             </div>
           ))}
         </div>
@@ -580,6 +584,7 @@ export function Admin() {
       </div>
       <section className="panel padded">
         <h2>Integration status</h2>
+          {providers.length>0&&<RuntimeSetup/>}
         <div className="table-wrap">
           <table>
             <thead>

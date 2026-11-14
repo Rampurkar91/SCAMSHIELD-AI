@@ -4,7 +4,7 @@
 
 | Feature | Actual implementation / API | Key files | Verification / outstanding configuration |
 |---|---|---|---|
-| Accounts and profile | Argon2, JWT, logout/password-change revocation, profile persistence | `backend/app/main.py`, `database.py`, `frontend/src/main.jsx` | Auth/profile/ownership tests, browser journey; 30-minute default JWT; email verification pending |
+| Accounts and profile | Argon2, JWT, logout/password-change revocation, profile persistence | `backend/app/main.py`, `database.py`, `frontend/src/main.jsx` | Auth/profile/ownership tests, browser journey; 30-minute default JWT; email verification implemented (SMTP owner configuration required) |
 | Password recovery | SMTP reset link, SHA-256 token digest, expiry, single use | same | Reset/expiry rejection/revocation and missing-SMTP tests; real SMTP delivery unverified |
 | Core scans | `/api/scans/url`, `/message`, `/upi`, `/email`; transparent unique evidence, UPI action explanation | `engine.py`, `services/analysis.py` | Safe/suspicious/Indic/mixed-education regression tests; no destination fetched |
 | Reputation adapters | Google Safe Browsing, PhishTank, URLhaus, optional VirusTotal, explicit opt-in | `integrations/providers.py` | Missing config, rate-limit, response validation/failure and score-floor tests with mocks; live credentials/egress needed |
@@ -32,9 +32,17 @@ Second migration: notifications, quiz_attempts, security_api_logs (provider name
 Not all 17 requested normalized tables exist. Unused placeholder tables were not added simply to imply implemented modules. Article/quiz definitions currently live in code; results/indicators live in scan JSON.
 
 ## Frontend language and TypeScript status
-New advanced pages and shared security types use checked TypeScript. Existing tested core JSX is preserved; this is not a completed all-TypeScript conversion. AI/fallback responses can use English, Hindi or Marathi. The overall navigation/interface is still English; multilingual UI translation remains pending.
+New advanced pages and shared security types use checked TypeScript. Existing tested core JSX is preserved; this is not a completed all-TypeScript conversion. AI/fallback responses can use English, Hindi or Marathi. English/Hindi/Marathi interface localization is now implemented; raw evidence and technical provider prose remain in their original language.
 
 ## Still outstanding
-Family groups/invitation consent; email verification; full UI translations; separate marketing landing page; real-time camera QR; evidence/report attachments; account deletion/retention workflows; security audit logs; normalized result/indicator/profile tables; shared/distributed rate limits and provider budgets; dedicated resource-isolated OCR/voice workers; validated deepfake detection; external static-scanner tool integrations; live SMTP/AI/reputation/OSV/PostgreSQL/deployment verification; URL ML training and deployment-grade evaluation.
+Separate marketing landing page; real-time camera QR; evidence/report attachments; account deletion/retention workflows; security audit logs; normalized result/indicator/profile tables; shared/distributed rate limits and provider budgets; container isolation deployment validation; validated deepfake detection; external static-scanner tool integrations; live SMTP/AI/reputation/OSV/PostgreSQL/deployment verification; URL ML training and deployment-grade evaluation.
 
 The application should not be represented as production-audited or as a complete implementation of the master prompt.
+
+
+## Verified family / localization / worker phase
+Implemented consent-based family groups, SMTP email verification, persisted language preferences and English/Hindi/Marathi UI catalogs, production remote-scanner fail-closed behavior, hardened worker Compose configuration, model installation tooling and admin runtime diagnostics. See FAMILY_I18N_WORKER_SETUP.md for files, migrations, setup and remaining operator checks. Live SMTP/provider keys, model weights, Docker isolation and PostgreSQL deployment are not verified in this sandbox.
+
+Validation for this phase: 47 backend tests and 20 frontend tests passed; TypeScript checks, production build and SQLite migration upgrade/downgrade/upgrade passed. Worker timeout kill and authenticated installation-health checks covered. Build retains a large-chunk performance warning. Optional faster-whisper package installed/imported locally; no speech model weights or live inference verified.
+
+Browser smoke: registration, family verification gate, missing-SMTP error and Hindi locale switching passed. Preview uses a fresh migrated SQLite database; the earlier unversioned local development database was preserved, not forcibly stamped or overwritten. Existing unversioned deployments require a schema audit/baseline before migrations.

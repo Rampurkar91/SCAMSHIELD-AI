@@ -66,6 +66,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Family, Verification } from "./pages/Family";
 import { GitHubScanner } from "./pages/GitHubScanner";
 import {
   UploadScanner,
@@ -77,6 +78,8 @@ import {
 } from "./pages/Advanced";
 import { api, errorText, download } from "./api";
 import "./styles.css";
+import{useLocale,setLocale,getLocale,tr}from"./i18n/core";
+import{LanguagePicker}from"./i18n/LanguagePicker";
 const Auth = createContext();
 const icons = {
   url: Link2,
@@ -95,6 +98,8 @@ function Icon({ type, ...props }) {
   return <I {...props} />;
 }
 function App() {
+  const locale=useLocale();
+  useEffect(()=>{document.documentElement.lang=locale},[locale]);
   const [user, setUser] = useState(null),
     [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -106,8 +111,10 @@ function App() {
         .finally(() => setLoading(false));
     else setLoading(false);
   }, []);
+  useEffect(()=>{if(user)api.get("/profile/preferences").then(r=>{if(["en","hi","mr"].includes(r.data.language))setLocale(r.data.language)}).catch(()=>{})},[user?.id]);
   return (
     <Auth.Provider value={{ user, setUser, loading }}>
+      <LanguagePicker />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<AuthPage />} />
@@ -178,6 +185,7 @@ function Shell() {
             [ScanLine, "Security scanner", "/scan"],
             [History, "Scan history", "/history"],
             [Flag, "Threat reports", "/reports"],
+              [ShieldCheck, "Family safety", "/family"],
             [Camera, "Screenshot scanner", "/image"],
             [ScanLine, "QR scanner", "/qr"],
             [Mail, "Email file scanner", "/email-file"],
@@ -320,6 +328,8 @@ function Shell() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/scan" element={<Scanner />} />
+              <Route path="/verify-email" element={<Verification />} />
+              <Route path="/family" element={<Private><Family /></Private>} />
               {["image", "qr", "voice", "code", "email-file"].map((kind) => (
                 <Route
                   key={kind}
@@ -900,7 +910,7 @@ function ScanTable({ items, onDelete }) {
                   /Z$|[+-]\d\d:\d\d$/.test(s.created_at)
                     ? s.created_at
                     : s.created_at + "Z",
-                ).toLocaleDateString("en-IN", {
+                ).toLocaleDateString(({en:"en-IN",hi:"hi-IN",mr:"mr-IN"})[getLocale()], {
                   day: "numeric",
                   month: "short",
                 })}
@@ -986,6 +996,7 @@ function Scanner() {
           content,
           ...(external ? { use_external: true } : {}),
           ...(ai ? { use_ai: true } : {}),
+          ...(getLocale()!=="en"?{language:{en:"English",hi:"Hindi",mr:"Marathi"}[getLocale()]}:{}),
         },
         { timeout: 120000 },
       );
@@ -1254,7 +1265,7 @@ function Result({ scan }) {
           </div>
         </div>
       </div>
-      <EnrichedResult result={r} />
+      <p>Technical findings and submitted evidence remain in their original language.</p><EnrichedResult result={r} />
       <div className="limitations">
         {r.limitations.map((l) => (
           <p key={l}>• {l}</p>
@@ -1393,7 +1404,7 @@ function HistoryPage() {
     return () => clearTimeout(t);
   }, [q, kind, level, page]);
   const remove = async (id) => {
-    if (!confirm("Permanently delete this scan?")) return;
+    if (!confirm(tr("Permanently delete this scan?"))) return;
     try {
       await api.delete("/history/" + id);
       load();
@@ -1630,8 +1641,8 @@ function SettingsPage() {
               <input value={user.email} disabled />
             </label>
             <p className="muted">
-              Email verification is not available in this release.
-            </p>
+              Email verification protects your family invitations.
+            </p><Link className="text-link" to="/verify-email">{user.email_verified ? "Email verified" : "Verify email"}</Link>
             <button className="btn primary">Save changes</button>
           </form>
         </section>

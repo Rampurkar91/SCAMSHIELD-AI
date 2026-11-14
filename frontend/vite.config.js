@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({jsxImportSource:"@scamshield/i18n"})],
+  resolve:{alias:{"@scamshield/i18n":new URL("./src/i18n",import.meta.url).pathname}},
   server: {
     host: "0.0.0.0",
     allowedHosts: true,

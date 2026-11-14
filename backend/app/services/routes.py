@@ -10,6 +10,7 @@ from ..integrations.providers import configured, gemini_answer
 from .images import analyze_image
 from .code import scan_zip
 from .voice import analyze_voice
+from .worker_client import scan_in_worker
 
 QUIZZES = [
     {
@@ -131,7 +132,7 @@ def make_router(current, db):
 
         mode = "qr" if request.url.path.endswith("/qr") else mode
         content, result = await run_in_threadpool(
-            analyze_image, raw, file.content_type, mode == "qr"
+            scan_in_worker, mode, raw, file.content_type
         )
         return save_scan(session, user, mode, content, result)
 
@@ -145,10 +146,10 @@ def make_router(current, db):
         raw = await read_file(file, 5 * 1024 * 1024)
         from starlette.concurrency import run_in_threadpool
 
-        result = await run_in_threadpool(scan_zip, raw, check_dependencies)
-        return save_scan(
-            session, user, "code", "Uploaded source ZIP (original discarded)", result
+        content, result = await run_in_threadpool(
+            scan_in_worker, "code", raw, file.content_type, check_dependencies
         )
+        return save_scan(session, user, "code", content, result)
 
     @router.post("/api/scans/voice", status_code=201)
     async def voice(
@@ -166,7 +167,9 @@ def make_router(current, db):
         raw = await read_file(file, 8 * 1024 * 1024)
         from starlette.concurrency import run_in_threadpool
 
-        content, result = await run_in_threadpool(analyze_voice, raw)
+        content, result = await run_in_threadpool(
+            scan_in_worker, "voice", raw, file.content_type
+        )
         return save_scan(session, user, "voice", content, result)
 
     @router.post("/api/scans/email-file", status_code=201)
@@ -288,6 +291,12 @@ def make_router(current, db):
         session.add(QuizAttempt(user_id=user.id, quiz_id=quiz_id, score=score))
         session.commit()
         return {"score": score, "explanation": quiz["explanation"]}
+
+    @router.get("/api/admin/runtime")
+    def runtime(user=Depends(admin)):
+        from .runtime_status import runtime_status
+
+        return runtime_status()
 
     @router.get("/api/admin/integrations/status")
     def status(user=Depends(admin), session=Depends(db)):

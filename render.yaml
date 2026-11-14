@@ -20,3 +20,6 @@ databases:
   - name: scamshield-db
     databaseName: scamshield
     user: scamshield
+# File scanners deliberately fail closed until SCANNER_WORKER_URL and
+# SCANNER_WORKER_KEY are set on the API. Deploy the worker Dockerfile on a
+# private, resource-constrained service; do not run it in the API container.

@@ -67,7 +67,11 @@ def scan_github(url, check_dependencies=False):
                             413,
                             "Repository archive exceeds 5 MiB; upload a smaller source ZIP instead.",
                         )
-        result = scan_zip(bytes(raw), check_dependencies)
+        from .worker_client import scan_in_worker
+
+        _, result = scan_in_worker(
+            "code", bytes(raw), "application/zip", check_dependencies
+        )
         result["details"].update(repository=f"{owner}/{repo}", commit=sha)
         return result
     except (httpx.HTTPError, ValueError, KeyError, TypeError):
