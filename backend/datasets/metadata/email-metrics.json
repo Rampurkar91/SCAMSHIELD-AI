@@ -1,0 +1,40 @@
+{
+  "task": "email",
+  "seed": 42,
+  "raw_sha256": "ebec58cfca94ea61c77df632314acae15bad410f4769d38b1a66cb41050e3431",
+  "records_after_deduplication": 4210,
+  "train_records": 3368,
+  "test_records": 842,
+  "accuracy": 0.9358669833729216,
+  "weighted_precision": 0.9364386070121528,
+  "weighted_recall": 0.9358669833729216,
+  "weighted_f1": 0.9360171417462092,
+  "labels": [
+    "ham",
+    "spam"
+  ],
+  "per_class": {
+    "ham": {
+      "precision": 0.9556451612903226,
+      "recall": 0.9367588932806324,
+      "f1": 0.9461077844311377
+    },
+    "spam": {
+      "precision": 0.9075144508670521,
+      "recall": 0.9345238095238095,
+      "f1": 0.9208211143695014
+    }
+  },
+  "confusion_matrix": [
+    [
+      474,
+      32
+    ],
+    [
+      22,
+      314
+    ]
+  ],
+  "false_positive_rate_ham_as_spam": 0.06324110671936758,
+  "limitations": "Random split may overestimate generalization. Not a calibrated fraud detector. Email model requires numeric Spambase features, not raw email text. URL models require domain/time-separated evaluation before deployment."
+}

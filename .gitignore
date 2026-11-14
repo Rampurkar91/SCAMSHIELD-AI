@@ -1,0 +1,21 @@
+.env
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+*.db
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+# Raw third-party data and generated executable model artifacts stay local.
+backend/datasets/sms/*
+backend/datasets/email/*
+backend/datasets/phishing/*
+backend/datasets/voice/*
+backend/models/*
+*.joblib
+!backend/datasets/sms/README.md
+!backend/datasets/email/README.md
+!backend/datasets/phishing/README.md
+!backend/datasets/voice/README.md
+!backend/models/README.md

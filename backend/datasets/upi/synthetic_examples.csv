@@ -1,0 +1,10 @@
+message_id,message_text,language,scam_category,label,source_type,source_reference
+syn-en-001,"To receive your refund, enter your UPI PIN and approve the collect request.",en,fake_refund,scam,synthetic,ScamShield authored fixture; not collected data
+syn-en-002,"Never share your OTP or UPI PIN. Verify transactions in your own banking app.",en,awareness,legitimate,synthetic,ScamShield authored fixture; not collected data
+syn-en-003,"Urgent KYC update: account blocked immediately. Send your OTP to our support agent.",en,otp_theft,scam,synthetic,ScamShield authored fixture; not collected data
+syn-hi-001,"तुरंत अपना ओटीपी भेजें। खाता बंद होगा।",hi,otp_theft,scam,synthetic,ScamShield authored fixture; not collected data
+syn-hi-002,"अपना ओटीपी साझा न करें। बैंक के आधिकारिक ऐप में जाँच करें।",hi,awareness,legitimate,synthetic,ScamShield authored fixture; not collected data
+syn-mr-001,"ताबडतोब पिन सांगा. खाते बंद होईल.",mr,otp_theft,scam,synthetic,ScamShield authored fixture; not collected data
+syn-mr-002,"ओटीपी किंवा पिन शेअर करू नका. अधिकृत बँक ॲपमध्ये व्यवहार तपासा.",mr,awareness,legitimate,synthetic,ScamShield authored fixture; not collected data
+syn-en-004,"A buyer says a payment was sent. Check your bank app before handing over goods.",en,payment_confirmation,suspicious,synthetic,ScamShield authored fixture; not collected data
+syn-en-005,"Guaranteed job offer: pay a registration fee before the interview.",en,fake_job,scam,synthetic,ScamShield authored fixture; not collected data
