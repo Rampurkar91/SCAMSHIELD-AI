@@ -9,3 +9,11 @@
 backend/datasets/sms
 backend/datasets/email
 backend/models
+.presentation-tools
+presentation
+ScamShield_AI_3_Minute_Demo.mp4
+ScamShield_AI_Video.zip
+.pytest_cache
+**/.venv
+**/.env.*
+!**/.env.example

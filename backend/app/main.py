@@ -552,3 +552,10 @@ def review(report_id: int, data: StatusIn, user=Depends(current), session=Depend
     r.status = data.status
     session.commit()
     return {"id": r.id, "status": r.status}
+
+
+# Production single-origin distribution. Disabled for API-only/local Vite setups.
+if os.getenv("SERVE_FRONTEND", "false").lower() == "true":
+    from .services.frontend import mount_frontend
+
+    mount_frontend(app, os.getenv("FRONTEND_DIST", "frontend/dist"))
