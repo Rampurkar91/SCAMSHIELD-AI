@@ -1,0 +1,49 @@
+name: Deployment packaging
+on: [push, pull_request]
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate full-stack Compose configuration
+        env:
+          POSTGRES_PASSWORD: ci-only-disposable-db-password
+          JWT_SECRET_KEY: ci-only-disposable-jwt-key-at-least-32-characters
+          SCANNER_WORKER_KEY: ci-only-disposable-scanner-key-at-least-32-characters
+        run: docker compose -f compose.production.yml config --quiet
+      - name: Build single-origin application image
+        run: docker build -t scamshield-ci .
+      - name: Smoke-test production image with isolated disposable SQLite
+        run: |
+          docker run -d --name scamshield-smoke -p 8080:8000 \
+            -e JWT_SECRET_KEY=ci-only-disposable-jwt-key-at-least-32-characters \
+            -e DATABASE_URL=sqlite:////tmp/smoke.db \
+            scamshield-ci
+          python - <<'PY'
+          import json, time, urllib.request, urllib.error
+          for attempt in range(60):
+              try:
+                  with urllib.request.urlopen('http://localhost:8080/health', timeout=3) as r:
+                      assert r.status == 200
+                  break
+              except (OSError, AssertionError):
+                  time.sleep(2)
+          else:
+              raise SystemExit('Application readiness failed')
+          for path in ('/', '/family', '/verify-email'):
+              request = urllib.request.Request('http://localhost:8080'+path, headers={'Accept':'text/html'})
+              with urllib.request.urlopen(request) as r:
+                  assert r.status == 200 and b'<html' in r.read()
+          try:
+              urllib.request.urlopen('http://localhost:8080/api/not-a-route')
+          except urllib.error.HTTPError as e:
+              assert e.code == 404
+          else:
+              raise SystemExit('Missing API route incorrectly served HTML')
+          PY
+      - name: Container logs on failure
+        if: failure()
+        run: docker logs scamshield-smoke || true
+      - name: Stop disposable container
+        if: always()
+        run: docker rm -f scamshield-smoke || true

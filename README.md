@@ -22,9 +22,24 @@ Cyber-safety application for **VibeX Codes — Track 3**, helping citizens, fami
 ## Honest limits
 Missing credentials return unavailable/error statuses, not invented provider results. This sandbox cannot verify live AI, reputation or OSV calls. Tesseract and a speech model are not installed here; OCR/transcription pipelines have mocked success tests and explicit missing-software errors. QR decoding, local rule scans, static ZIP scans, datasets and baseline training ran locally.
 
-Still pending: family invitations/consent groups, email verification, full Hindi/Marathi UI translation, all-TypeScript migration, standalone marketing landing page, camera QR, evidence attachments, audit trails/retention/account deletion, full normalized 17-table schema, Semgrep/Bandit/Gitleaks, dedicated resource-isolated workers, distributed quotas, deployment-grade URL ML and live PostgreSQL/cloud verification. New advanced pages/types use TypeScript; existing core JSX is preserved.
+Implemented in later phases: verified-email family groups with per-summary consent, Hindi/Marathi UI localization, manual camera QR capture and a separately configured scanner worker. Still pending: all-TypeScript migration, standalone marketing landing page, continuous QR decoding, evidence attachments, audit trails/retention/account deletion, full normalized 17-table schema, external static-scanner integrations, distributed quotas, deployment-grade URL ML and live deployment/isolation verification. New advanced pages/types use TypeScript; existing core JSX is preserved.
 
-## Quick start
+## Easy deployment (one website URL)
+
+The root `Dockerfile` bundles the production UI and API. For the full local/VPS
+stack (PostgreSQL plus separate scanner worker), install Docker Compose v2.24+
+and run from the repository root:
+
+```sh
+python backend/scripts/deploy.py
+```
+
+Open **http://localhost:8080**. For public hosting, HTTPS, optional speech setup,
+Render and credentials, follow **[Easy deployment](docs/EASY_DEPLOY.md)**.
+No provider keys or paid cloud accounts are created automatically. Docker/cloud
+operation must be verified in your environment.
+
+## Quick start (development)
 Requires Python 3.11+ and Node 22.12+.
 ```bash
 python -m venv .venv
@@ -75,7 +90,7 @@ backend/app/engine.py            Local transparent scoring
 backend/app/main.py              Core auth/history/dashboard/report API
 backend/app/integrations/        Fixed-endpoint provider clients
 backend/app/services/            Analysis, ML, image, voice, code, GitHub and advanced routes
-backend/migrations/              Two Alembic schema revisions
+backend/migrations/              Versioned Alembic schema revisions
 backend/scripts/                Reproducible downloads and offline training
 backend/datasets/metadata/       Provenance and measured evaluations
 backend/tests/                  API, rule, file, provider and isolation tests

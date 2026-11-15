@@ -66,3 +66,9 @@ Browser smoke: registration, family verification gate, missing-SMTP error and Hi
   embedded-preview permissions policy; use the standalone HTTPS page or upload.
   Destinations are not opened and payment receipt is not verified. Large-bundle
   build warning remains.
+
+
+## Easy deployment packaging
+Root multi-stage Dockerfile builds the frontend and serves its production assets from the API on a single origin. `compose.production.yml` adds PostgreSQL persistence and the existing separately isolated scanner. `backend/scripts/deploy.py` provides a portable launcher, secret generation and failure reporting. Render uses the bundled root image; file scans remain fail-closed without its separately provisioned worker. See EASY_DEPLOY.md. No cloud/Docker success is claimed without operator or CI evidence.
+
+Easy-deployment validation: 59 backend tests passed, 1 skipped (trusted model artifact not present); 24 frontend tests, TypeScript and production build passed. YAML files parsed successfully. A fresh migrated SQLite production-mode process passed real HTTP checks for SPA route refreshes, JS assets, missing API 404, registration, message scan, owned history and file-scanner fail-closed behavior. Docker engine/Compose are not installed in this sandbox; the added CI job is responsible for actual Compose/image checks. Large frontend bundle warning remains.

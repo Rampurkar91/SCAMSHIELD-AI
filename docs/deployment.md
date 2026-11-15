@@ -1,5 +1,7 @@
 # Deployment
 
+**For the simplified production UI + API deployment, start with [Easy deployment](EASY_DEPLOY.md).** The original docker-compose.yml below is the development stack; compose.production.yml publishes a single application URL.
+
 No cloud or Docker deployment has been verified in this sandbox. PostgreSQL SQLAlchemy configuration and migrations are included, but runtime PostgreSQL connectivity must be tested in your environment.
 
 See [verified family, translation and isolated-worker setup](FAMILY_I18N_WORKER_SETUP.md) for the current deployment requirements.

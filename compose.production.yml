@@ -1,0 +1,49 @@
+# Single public origin. PostgreSQL and scanner have no host ports.
+services:
+  db:
+    extends:
+      file: docker-compose.yml
+      service: db
+    restart: unless-stopped
+  scanner:
+    extends:
+      file: docker-compose.yml
+      service: scanner
+  model-setup:
+    extends:
+      file: docker-compose.yml
+      service: model-setup
+    profiles: [setup]
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      APP_ENV: production
+      SERVE_FRONTEND: 'true'
+      FRONTEND_DIST: /app/frontend/dist
+      PORT: '8000'
+      DATABASE_URL: postgresql+psycopg://scamshield:${POSTGRES_PASSWORD:?Run python backend/scripts/configure_local.py}@db:5432/scamshield
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Run python backend/scripts/configure_local.py}
+      SCANNER_WORKER_URL: http://scanner:8090
+      SCANNER_WORKER_KEY: ${SCANNER_WORKER_KEY:?Run python backend/scripts/configure_local.py}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+    ports: ['${APP_PORT:-8080}:8000']
+    networks: [default, scan]
+    depends_on:
+      db:
+        condition: service_healthy
+      scanner:
+        condition: service_started
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+networks:
+  scan:
+    internal: true
+volumes:
+  postgres-data:
+  speech-models:
