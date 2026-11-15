@@ -13,7 +13,7 @@
 | Email numeric baseline | UCI Spambase offline training/evaluation, not falsely applied to pasted email | training scripts, metadata | Trained/evaluated here; raw-email feature extractor not implemented |
 | URL ML | Training command for licensed, multiclass user-supplied CSV | training scripts | No licensed training set validated; no trained URL classifier active |
 | Image/OCR | JPEG/PNG/WebP, content/MIME/pixel/byte limits, timeout, Tesseract text extraction, no originals retained | `services/images.py`, upload UI | Real image validation; OCR success/failure mocked because Tesseract absent here. Docker installs OCR; not built here |
-| QR | Real OpenCV QR decode, non-clickable payload, UPI intent | same | Actual generated UPI QR decoded and owned record persisted in Pytest; no camera integration |
+| QR | Real OpenCV QR decode, non-clickable payload, UPI intent | same | Actual generated UPI QR decoded and owned record persisted in Pytest; explicit camera capture is now supported; see camera phase below |
 | Email file | `/api/scans/email-file`; bounded .eml plain text/header extraction, attachment names/types only | `services/routes.py` | Email file API test; no attachment execution or independent SPF/DKIM verification |
 | Voice | PCM WAV size/duration checks, explicit consent, optional local faster-whisper | `services/voice.py`, `routes.py`, upload UI | Consent/config tests and mocked local transcript pipeline; real model installation/inference unverified; no deepfake detector |
 | Developer ZIP | Memory-only bounded ZIP text inspection, no extraction/execution; redacted findings with lines/remediation | `services/code.py` | Real ZIP scan, traversal/size rejects, secret-redaction tests. Built-in rules, not Semgrep/Bandit/Gitleaks |
@@ -35,7 +35,7 @@ Not all 17 requested normalized tables exist. Unused placeholder tables were not
 New advanced pages and shared security types use checked TypeScript. Existing tested core JSX is preserved; this is not a completed all-TypeScript conversion. AI/fallback responses can use English, Hindi or Marathi. English/Hindi/Marathi interface localization is now implemented; raw evidence and technical provider prose remain in their original language.
 
 ## Still outstanding
-Separate marketing landing page; real-time camera QR; evidence/report attachments; account deletion/retention workflows; security audit logs; normalized result/indicator/profile tables; shared/distributed rate limits and provider budgets; container isolation deployment validation; validated deepfake detection; external static-scanner tool integrations; live SMTP/AI/reputation/OSV/PostgreSQL/deployment verification; URL ML training and deployment-grade evaluation.
+Separate marketing landing page; continuous real-time QR decoding; evidence/report attachments; account deletion/retention workflows; security audit logs; normalized result/indicator/profile tables; shared/distributed rate limits and provider budgets; container isolation deployment validation; validated deepfake detection; external static-scanner tool integrations; live SMTP/AI/reputation/OSV/PostgreSQL/deployment verification; URL ML training and deployment-grade evaluation.
 
 The application should not be represented as production-audited or as a complete implementation of the master prompt.
 
@@ -46,3 +46,23 @@ Implemented consent-based family groups, SMTP email verification, persisted lang
 Validation for this phase: 47 backend tests and 20 frontend tests passed; TypeScript checks, production build and SQLite migration upgrade/downgrade/upgrade passed. Worker timeout kill and authenticated installation-health checks covered. Build retains a large-chunk performance warning. Optional faster-whisper package installed/imported locally; no speech model weights or live inference verified.
 
 Browser smoke: registration, family verification gate, missing-SMTP error and Hindi locale switching passed. Preview uses a fresh migrated SQLite database; the earlier unversioned local development database was preserved, not forcibly stamped or overwritten. Existing unversioned deployments require a schema audit/baseline before migrations.
+
+
+## Camera QR capture phase
+
+- Added `frontend/src/pages/CameraCapture.tsx`, connected to the existing QR upload
+  workflow in `Advanced.tsx`. Explicit camera permission, rear-camera preference,
+  no microphone, one bounded JPEG frame, and a separate Analyze file action before
+  uploading to `/api/scans/qr`. Existing backend authorization, worker isolation,
+  QR decoding and scan persistence apply; no new database tables or external API.
+- Camera tracks stop on capture, explicit close, page hide or component unmount.
+  Late permission responses are released after cancellation. Permission/HTTPS/
+  unsupported-browser failures show actionable errors with image-upload fallback.
+- New camera UI/errors have Hindi and Marathi translations. Four tests cover
+  explicit start/denial, close/unmount cleanup, late permission cancellation and
+  bounded JPEG capture. Frontend: 24 tests passed; typecheck and build passed.
+- This is manual camera capture, not continuous/live QR decoding. No physical
+  camera device was tested in this sandbox. Camera permission can be blocked by
+  embedded-preview permissions policy; use the standalone HTTPS page or upload.
+  Destinations are not opened and payment receipt is not verified. Large-bundle
+  build warning remains.

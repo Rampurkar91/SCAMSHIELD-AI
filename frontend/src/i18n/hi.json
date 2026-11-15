@@ -521,5 +521,16 @@
   "English": "English",
   "Hindi": "हिन्दी",
   "Marathi": "मराठी",
-  "Technical findings and submitted evidence remain in their original language.": "तकनीकी निष्कर्ष और जमा किए गए साक्ष्य अपनी मूल भाषा में रहते हैं।"
+  "Technical findings and submitted evidence remain in their original language.": "तकनीकी निष्कर्ष और जमा किए गए साक्ष्य अपनी मूल भाषा में रहते हैं।",
+  "Scan with your camera": "अपने कैमरे से स्कैन करें",
+  "Camera access starts only when you allow it. Capture one frame, then choose Analyze file to upload it. No audio is recorded.": "कैमरा केवल आपकी अनुमति से चालू होता है। एक चित्र लें, फिर अपलोड के लिए फ़ाइल विश्लेषण चुनें। आवाज़ रिकॉर्ड नहीं होती।",
+  "Camera preview": "कैमरा पूर्वावलोकन",
+  "Enable camera": "कैमरा चालू करें",
+  "Capture QR image": "क्यूआर चित्र लें",
+  "Stop camera": "कैमरा बंद करें",
+  "QR destinations are never opened automatically. A QR code cannot verify that money was received.": "क्यूआर गंतव्य अपने आप कभी नहीं खुलते। क्यूआर कोड पैसे प्राप्त होने की पुष्टि नहीं कर सकता।",
+  "Camera unavailable. Use HTTPS and a supported browser, or upload a QR image.": "कैमरा अनुपलब्ध है। HTTPS और समर्थित ब्राउज़र का उपयोग करें या क्यूआर चित्र अपलोड करें।",
+  "Camera access failed. Check permission or upload a QR image.": "कैमरा चालू नहीं हुआ। अनुमति जाँचें या क्यूआर चित्र अपलोड करें।",
+  "Camera is not ready. Try again.": "कैमरा तैयार नहीं है। फिर प्रयास करें।",
+  "Image capture failed. Upload a QR image instead.": "चित्र नहीं लिया जा सका। क्यूआर चित्र अपलोड करें।"
 }

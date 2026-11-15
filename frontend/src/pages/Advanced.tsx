@@ -5,6 +5,7 @@ import React, {
   type FormEvent,
 } from "react";
 import { Link } from "react-router-dom";
+import {CameraCapture} from "./CameraCapture";
 import{RuntimeSetup}from"./RuntimeSetup";
 import{useLocale}from"../i18n/core";
 import {
@@ -171,6 +172,7 @@ export function UploadScanner({
         </span>
         <h2>{info.title}</h2>
         <p>{info.description}</p>
+        {kind === "qr" && <CameraCapture disabled={busy} onCapture={captured=>{setFile(captured);setResult(null);setError("")}}/>}
         <form onSubmit={submit}>
           <label htmlFor={"upload-" + kind}>
             Choose file · maximum {info.max} MiB
@@ -182,7 +184,7 @@ export function UploadScanner({
               id={"upload-" + kind}
               type="file"
               accept={info.accept}
-              required
+              required={!file}
               onChange={(e) => {
                 setFile(e.target.files?.[0] || null);
                 setResult(null);
