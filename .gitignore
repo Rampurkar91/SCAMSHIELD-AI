@@ -19,3 +19,11 @@ backend/models/*
 !backend/datasets/phishing/README.md
 !backend/datasets/voice/README.md
 !backend/models/README.md
+
+# Presentation tooling and generated media are distributed outside Git.
+.presentation-tools/
+presentation/audio/
+presentation/frames/
+presentation/deliverables/
+/ScamShield_AI_3_Minute_Demo.mp4
+/ScamShield_AI_Video.zip
