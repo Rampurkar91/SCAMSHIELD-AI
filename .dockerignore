@@ -1,0 +1,11 @@
+.git
+.venv
+**/node_modules
+**/dist
+**/.env
+**/__pycache__
+**/test-results
+*.db
+backend/datasets/sms
+backend/datasets/email
+backend/models

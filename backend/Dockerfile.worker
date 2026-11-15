@@ -1,0 +1,13 @@
+FROM python:3.11-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 HOME=/tmp HF_HUB_DISABLE_TELEMETRY=1
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-hin tesseract-ocr-mar ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt ./requirements.txt
+COPY backend/requirements*.txt ./backend/
+RUN pip install --no-cache-dir -r backend/requirements-voice.txt
+COPY backend/app ./backend/app
+COPY backend/scripts ./backend/scripts
+RUN groupadd -g 10001 scanner && useradd -u 10001 -g scanner scanner && mkdir /models && chown scanner:scanner /models
+USER 10001:10001
+EXPOSE 8090
+CMD ["uvicorn","backend.app.worker:app","--host","0.0.0.0","--port","8090","--no-access-log"]

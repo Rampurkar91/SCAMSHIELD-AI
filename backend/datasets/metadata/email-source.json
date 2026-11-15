@@ -1,0 +1,15 @@
+{
+  "repo": "COM6012/ScalableML",
+  "path": "Data/spambase.data",
+  "file": "spambase.csv",
+  "official": "https://archive.ics.uci.edu/dataset/94/spambase",
+  "license": "CC BY 4.0 (UCI dataset listing); cite Hopkins, Reeber, Forman and Suermondt",
+  "description": "57 numeric features and binary spam label; not raw email text or phishing labels.",
+  "name": "email",
+  "mirror_api": "https://api.github.com/repos/COM6012/ScalableML/contents/Data/spambase.data",
+  "github_blob_sha": "5bada50970448a3c50ecece361a60b8e17bbcfba",
+  "sha256": "ebec58cfca94ea61c77df632314acae15bad410f4769d38b1a66cb41050e3431",
+  "downloaded_at": "2026-11-14T18:03:40.405480+00:00",
+  "records_raw": 4601,
+  "redistributed": false
+}

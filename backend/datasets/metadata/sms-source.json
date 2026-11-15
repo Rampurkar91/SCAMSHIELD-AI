@@ -1,0 +1,15 @@
+{
+  "repo": "justmarkham/pycon-2016-tutorial",
+  "path": "data/sms.tsv",
+  "file": "sms.tsv",
+  "official": "https://archive.ics.uci.edu/dataset/228/sms+spam+collection",
+  "license": "CC BY 4.0 (UCI dataset listing); cite original SMS Spam Collection creators",
+  "description": "English ham/spam messages. Mirror counts may differ from the UCI catalog.",
+  "name": "sms",
+  "mirror_api": "https://api.github.com/repos/justmarkham/pycon-2016-tutorial/contents/data/sms.tsv",
+  "github_blob_sha": "02462fc99afb936b869333c27668d872b252c811",
+  "sha256": "7d039a24a6083ed9ef0f806ebad56bbb976e3aeb8de05669173bfdc4996c239d",
+  "downloaded_at": "2026-11-14T18:03:16.803194+00:00",
+  "records_raw": 5574,
+  "redistributed": false
+}
